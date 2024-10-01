@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -28,6 +29,31 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 
+def gameover(screen, kk_rct):
+    blackout_surf = pg.Surface((WIDTH, HEIGHT))
+    blackout_surf.fill((0, 0, 0))
+    blackout_surf.set_alpha(128)
+
+    screen.blit(blackout_surf, (0, 0))
+
+
+    crying_kk_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
+    crying_kk_rct1 = crying_kk_img.get_rect(center=(WIDTH//2 - 200, HEIGHT//2))
+    crying_kk_rct2 = crying_kk_img.get_rect(center=(WIDTH//2 + 200, HEIGHT//2))
+    screen.blit(crying_kk_img, crying_kk_rct1)
+    screen.blit(crying_kk_img, crying_kk_rct2)
+
+
+    font = pg.font.Font(None, 80)
+    text = font.render("Game Over", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2))
+    screen.blit(text, text_rect)
+
+
+    pg.display.update()
+    time.sleep(5)
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -51,8 +77,8 @@ def main():
         screen.blit(bg_img, [0, 0])
         if kk_rct.colliderect(bb_rct):
             # こうかとんと爆弾が重なっていたら
-            print("GameOver")
-            return
+            gameover(screen, kk_rct)
+            return 
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]  # 横座標, 縦座標
